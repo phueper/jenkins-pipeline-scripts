@@ -14,3 +14,7 @@ def call(
         error("Service ${service} exited with code ${exit_code}")
     }
 }
+
+def call(args) {
+    return call(args.service, args.testReportsDir, args.allowEmptyResults || false, args.healtScaleFactor || 1.0)
+}

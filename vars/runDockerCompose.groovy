@@ -19,3 +19,7 @@ def call(
         }
     }
 }
+
+def call(args, Closure body = null) {
+    return call(args.composeFileSuffix, args.uuid, body)
+}

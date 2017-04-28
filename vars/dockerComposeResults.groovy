@@ -7,7 +7,10 @@ def call(
     CONTAINER=sh(returnStdout: true, script: "docker-compose ps -q ${service}").trim()
     exit_code=sh(returnStdout: true, script: "docker wait ${CONTAINER}").trim()
     if (testReportsDir != null) {
-        sh "docker cp ${CONTAINER}:${testReportsDir}/ ./results"
+        copyExitCode = sh(returnStatus: true, script: "docker cp ${CONTAINER}:${testReportsDir}/ ./results")
+        if (copyExitCode != 0) {
+            echo("WARNING: Fetching test results from container failed with ${copyExitCode}")
+        }
         junit(testResults: 'results/**/*.xml', allowEmptyResults: allowEmptyResults, healthScaleFactor: healthScaleFactor, testDataPublishers: [[$class: 'AttachmentPublisher']])
     }
     if (exit_code != "0") {

@@ -3,11 +3,13 @@ import java.util.UUID
 def call(
         String composeFileSuffix = '',
         String composeProjectName = UUID.randomUUID(),
+        String composeFile,
         Closure body = null
 ) {
     if (!composeFileSuffix) composeFileSuffix = ''
     if (!composeProjectName) composeProjectName = UUID.randomUUID()
-    withEnv(["COMPOSE_FILE=docker-compose${composeFileSuffix}.yml",
+    if (!composeFile) composeFile = "docker-compose${composeFileSuffix}.yml"
+    withEnv(["COMPOSE_FILE=${composeFile}",
              "COMPOSE_PROJECT_NAME=${composeProjectName}"]) {
         ansiColor('xterm') {
             try {
@@ -23,5 +25,5 @@ def call(
 }
 
 def call(args, Closure body = null) {
-    return call(args.composeFileSuffix, args.composeProjectName, body)
+    return call(args.composeFileSuffix, args.composeProjectName, args.composeFile, body)
 }

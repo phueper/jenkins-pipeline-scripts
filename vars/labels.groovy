@@ -1,6 +1,6 @@
 import jenkins.model.*
 
-class labels extends Serializable {
+class labels {
     boolean isOnNodeWithLabel(String label) {
         Jenkins.instance.getLabels().contains(Jenkins.instance.getLabelAtom(label))
     }

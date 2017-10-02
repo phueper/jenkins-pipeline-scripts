@@ -10,6 +10,8 @@ def call(
         copyExitCode = sh(returnStatus: true, script: "docker cp ${CONTAINER}:${testReportsDir}/ ./results")
         if (copyExitCode != 0) {
             echo("WARNING: Fetching test results from container failed with ${copyExitCode}")
+        } else {
+            sh "find ./results -name '*.xml' -exec sed -i \"s:[[ATTACHMENT|${testReportsDir}:[[ATTACHMENT|\$(pwd)/results:g\" {} \\;"
         }
         junit(testResults: 'results/**/*.xml', allowEmptyResults: allowEmptyResults, healthScaleFactor: healthScaleFactor, testDataPublishers: [[$class: 'AttachmentPublisher']])
     }

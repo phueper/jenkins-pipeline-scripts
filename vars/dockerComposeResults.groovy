@@ -9,7 +9,7 @@ def call(
     if (testReportsDir != null) {
         copyExitCode = sh(returnStatus: true, script: $/
 docker cp ${CONTAINER}:${testReportsDir}/ ./results
-SED_COMMAND="s:$(echo -n "[[ATTACHMENT|${testReportsDir}" | sed 's/[\[:&.*]/\\&/g'):$(echo -n "[[ATTACHMENT|$(pwd)/results" | sed 's/[:&]/\\&/g'):g"
+SED_COMMAND="s:$(echo -n "[[ATTACHMENT|${testReportsDir}" | sed 's/[\[\:&.*]/\\&/g'):$(echo -n "[[ATTACHMENT|$(pwd)/results" | sed 's/[:&]/\\&/g'):g"
 find ./results -name '*.xml' -exec sed -i "$${SED_COMMAND}" {} \;
 /$)
         if (copyExitCode != 0) {

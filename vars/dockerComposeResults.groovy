@@ -7,11 +7,13 @@ def call(
     CONTAINER=sh(returnStdout: true, script: "docker-compose ps -q ${service}").trim()
     exit_code=sh(returnStdout: true, script: "docker wait ${CONTAINER}").trim()
     if (testReportsDir != null) {
-        copyExitCode = sh(returnStatus: true, script: "docker cp ${CONTAINER}:${testReportsDir}/ ./results")
+        copyExitCode = sh(returnStatus: true, script: $/
+docker cp ${CONTAINER}:${testReportsDir}/ ./results
+SED_COMMAND="s:$(echo -n "[[ATTACHMENT|${testReportsDir}" | sed 's/[\[:&.*]/\\&/g'):$(echo -n "[[ATTACHMENT|$(pwd)/results" | sed 's/[:&]/\\&/g'):g"
+find ./results -name '*.xml' -exec sed -i "$${SED_COMMAND}" {} \;
+/$)
         if (copyExitCode != 0) {
             echo("WARNING: Fetching test results from container failed with ${copyExitCode}")
-        } else {
-            sh "find ./results -name '*.xml' -exec sed -i \"s:[[ATTACHMENT|${testReportsDir}:[[ATTACHMENT|\$(pwd)/results:g\" {} \\;"
         }
         junit(testResults: 'results/**/*.xml', allowEmptyResults: allowEmptyResults, healthScaleFactor: healthScaleFactor, testDataPublishers: [[$class: 'AttachmentPublisher']])
     }

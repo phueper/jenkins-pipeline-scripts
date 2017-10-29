@@ -1,5 +1,3 @@
-import java.util.UUID
-
 def call(
         String composeFileSuffix = '',
         String composeProjectName = UUID.randomUUID(),
@@ -15,6 +13,10 @@ def call(
              "COMPOSE_PROJECT_NAME=${composeProjectName}"]) {
         ansiColor('xterm') {
             try {
+                sh "docker-compose create"
+                lock(label: 'docker', quantity: 1) {
+                    sh "docker-compose up -d"
+                }
                 sh "docker-compose up ${flags}"
                 if (body) {
                     return body()

@@ -10,8 +10,7 @@ def call(
     if (!composeFile) composeFile = "docker-compose${composeFileSuffix}.yml"
     String flags = service ? "--exit-code-from ${service}" : '--abort-on-container-exit'
     withEnv(["COMPOSE_FILE=${composeFile}",
-             "COMPOSE_PROJECT_NAME=${composeProjectName}",
-             "PATH+WHATEVER=${tool('docker-compose')}"]) {
+             "COMPOSE_PROJECT_NAME=${composeProjectName}"]) {
         ansiColor('xterm') {
             try {
                 sh "docker-compose create"

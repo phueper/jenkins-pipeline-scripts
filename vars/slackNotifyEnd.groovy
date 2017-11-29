@@ -2,12 +2,26 @@ String after() {
     return " after ${currentBuild.durationString.replace(' and counting', '')}".toString()
 }
 
-def call(String slackChannel, String buildDescription, Throwable error = null) {
-    boolean unstable = currentBuild.resultIsBetterOrEqualTo('UNSTABLE')
-    boolean success = currentBuild.resultIsBetterOrEqualTo('SUCCESS')
-    String color = error != null ? 'danger' : success ? 'good' : unstable ? 'warning' : 'danger'
-    String message = error != null ? "FAILED: ${error}${after()}"
-            : success ? "ALL Tests succeeded${after()}"
-            : "${currentBuild.currentResult}${after()}\n${getTestSummary()}"
+void unstableOrWorse(String slackChannel, String buildDescription) {
+    String color = currentBuild.currentResult == 'UNSTABLE' ? 'warning' : 'danger'
+    String message = "${currentBuild.currentResult}${after()}\n${getTestSummary()}"
     slackSend(channel: slackChannel, color: color, message: "${buildDescription}: ${message}")
+}
+
+void success(String slackChannel, String buildDescription) {
+    slackSend(channel: slackChannel, color: 'good', message: "${buildDescription}: ALL Tests succeeded${after()}")
+}
+
+void buildError(String slackChannel, String buildDescription, Throwable error) {
+    slackSend(channel: slackChannel, color: 'danger', message: "${buildDescription}: FAILED: ${error}${after()}")
+}
+
+def call(String slackChannel, String buildDescription, Throwable error = null) {
+    if (error != null) {
+        buildError(slackChannel, buildDescription, error)
+    } else if (currentBuild.currentResult == 'SUCCESS') {
+        success(slackChannel, buildDescription, )
+    } else {
+        unstableOrWorse(slackChannel, buildDescription)
+    }
 }

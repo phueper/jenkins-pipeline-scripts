@@ -1,5 +1,5 @@
 String after() {
-    return " after ${currentBuild.durationString.replace(' and counting', '')}".toString()
+    return " after ${currentBuild.durationString.replace(' and counting', '')}\n<${env.RUN_CHANGES_DISPLAY_URL}|Changes:>\n${getChangeLog()}".toString()
 }
 
 void unstableOrWorse(String slackChannel, String buildDescription) {

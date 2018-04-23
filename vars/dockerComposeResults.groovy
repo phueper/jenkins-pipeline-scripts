@@ -25,6 +25,6 @@ find ./results -name '*.xml' -exec sed -i "$${SED_COMMAND}" {} \;
 }
 
 def call(args) {
-        return call((String) args.service, (String) args.testReportsDir, (boolean) (args.allowEmptyResults || false), (double) (args.healthScaleFactor || 1.0))
+        return call(args.service, args.testReportsDir, args.allowEmptyResults, args.healthScaleFactor)
 }
 

@@ -5,10 +5,10 @@ def call(
         double healthScaleFactor = 1.0
 ) {
     docker.withTool('docker') {
-        CONTAINER = sh(returnStdout: true, script: "docker-compose ps -q ${service}").trim()
-        exit_code = sh(returnStdout: true, script: "docker wait ${CONTAINER}").trim()
+        def CONTAINER = sh(returnStdout: true, script: "docker-compose ps -q ${service}").trim()
+        def exit_code = sh(returnStdout: true, script: "docker wait ${CONTAINER}").trim()
         if (testReportsDir != null) {
-            copyExitCode = sh(returnStatus: true, script: $/
+            def copyExitCode = sh(returnStatus: true, script: $/
 docker cp ${CONTAINER}:${testReportsDir}/ ./results
 SED_COMMAND="s:$(echo -n "[[ATTACHMENT|${testReportsDir}" | sed 's/[\[\:&.*]/\\&/g'):$(echo -n "[[ATTACHMENT|$(pwd)/results" | sed 's/[:&]/\\&/g'):g"
 find ./results -name '*.xml' -exec sed -i "$${SED_COMMAND}" {} \;
@@ -25,6 +25,6 @@ find ./results -name '*.xml' -exec sed -i "$${SED_COMMAND}" {} \;
 }
 
 def call(args) {
-        return call(args.service, args.testReportsDir, args.allowEmptyResults || false, (args.healthScaleFactor ?: 1.0d))                                                                          
+        return call(args.service, args.testReportsDir, args.allowEmptyResults || false, (args.healthScaleFactor ?: 1.0d))
 }
 
